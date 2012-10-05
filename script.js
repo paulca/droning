@@ -1,19 +1,27 @@
 var arDrone = require('ar-drone');
 var client  = arDrone.createClient();
+var altitude = undefined;
+
+client.config('general:navdata_demo', 'FALSE');
+
+client.on('navdata', function(data) {
+  if (data.rawMeasures) {
+    altitude = data.rawMeasures.altTempRaw;
+  }
+});
 
 client.takeoff();
 
-client
-  .after(5000, function() {
-        this.clockwise(0.5);
-          })
-  .after(3000, function() {
-    this.up(1);
-   })
-  .after(1000, function() {
-    this.animate('flipAhead');
-  })
-  .after(3000, function() {
-        this.stop();
-        this.land();
- });
+function goToAlt(target) {
+  var getCloser = function() {
+    if ((target - altitude) < 50) {
+      client.down(0.5);
+      setTimeout(getCloser, 1);
+    }
+    if ((target - altitude) > 50) {
+      client.up(0.5);
+      setTimeout(getCloser, 1);
+    }
+  }
+  getCloser()
+}
