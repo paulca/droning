@@ -14,7 +14,7 @@ client.takeoff();
 
 function goToAlt(target) {
   var getCloser = function() {
-    if ((target - altitude) < 50) {
+    if ((target - altitude) < -50) {
       client.down(0.5);
       setTimeout(getCloser, 1);
     }
@@ -22,6 +22,10 @@ function goToAlt(target) {
       client.up(0.5);
       setTimeout(getCloser, 1);
     }
+    if ((target - altitude) > -50 && (target - altitude) < 50) {
+      client.stop();
+    }
+
   }
   getCloser()
 }
